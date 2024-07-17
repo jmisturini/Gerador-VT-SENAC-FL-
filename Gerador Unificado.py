@@ -5,14 +5,19 @@ from datetime import datetime
 current_datetime = datetime.now().strftime("%d-%m-%Y %H-%M-%S")
 str_current_datetime = str(current_datetime)
 
+__location__ = os.path.realpath(
+    os.path.join(os.getcwd(), os.path.dirname(__file__)))
+
 filepath = os.getenv('USERPROFILE')
 
-workbook_request = load_workbook(filepath + "\\Desktop\\" + "GerarVT\\Pedido de Compra.xlsx", data_only=True)
+#workbook_request = load_workbook(filepath + "\\Desktop\\" + "GerarVT\\Pedido de Compra.xlsx", data_only=True)
+
+workbook_request = load_workbook(os.path.join(__location__) + "\\Pedido de Compra.xlsx", data_only=True)
 
 sheets = workbook_request.sheetnames
 
-if not os.path.exists(filepath + "\\Desktop\\" + "GerarVT\\Gerados"):
-    os.mkdir(filepath + "\\Desktop\\" + "GerarVT\\Gerados")
+if not os.path.exists(os.path.join(__location__) + "\\Gerados"):
+    os.mkdir(os.path.join(__location__) + "\\Gerados")
 else:
     print ("A pasta já existe")
 
@@ -138,7 +143,7 @@ for worksheet_request in workbook_request.worksheets[0:2]:
     if user_input.lower() == "s":
         #os.system('cls')
         if worksheet_request.title == "VT COLABORADORES":
-            workbook_base = load_workbook(filepath + "\\Desktop\\" + "GerarVT\\Planilha_Base.xlsx")
+            workbook_base = load_workbook(os.path.join(__location__) + "\\Planilha_Base.xlsx")
             worksheet_base = workbook_base ["Vale Transporte"]
             print ("\nTransferindo Informações para a Planilha\n")
             for x in range (len(ids)):
@@ -146,14 +151,14 @@ for worksheet_request in workbook_request.worksheets[0:2]:
                 worksheet_base.cell(row=x+5,column=2).value=names[x]
                 worksheet_base.cell(row=x+5,column=3).value=totals[x]
             print ("Gerando Planilha")
-            workbook_base.save(filepath + "\\Desktop\\" + "GerarVT\\Gerados\\Tabela Vale Transporte Colaboradores" + "(" + str_current_datetime + ")" + ".xlsx")
+            workbook_base.save(os.path.join(__location__) + "\\Gerados\\Tabela Vale Transporte Colaboradores" + "(" + str_current_datetime + ")" + ".xlsx")
             print("\nPlanilha de Colaboradores Gerada com Sucesso")
             input ("\nPressione qualquer tecla para continuar...\n")
     else:
         continue
     if worksheet_request.title == "VT PROFESSORES":
         #os.system('cls')
-        workbook_base = load_workbook(filepath + "\\Desktop\\" + "GerarVT\\Planilha_Base.xlsx")
+        workbook_base = load_workbook(os.path.join(__location__) + "\\Planilha_Base.xlsx")
         worksheet_base = workbook_base ["Vale Transporte"]
         print ("\nTransferindo Informações para a Planilha\n")                
         for x in range (len(ids)):
@@ -161,7 +166,7 @@ for worksheet_request in workbook_request.worksheets[0:2]:
             worksheet_base.cell(row=x+5,column=2).value=names[x]
             worksheet_base.cell(row=x+5,column=3).value=totals[x]
         print ("Gerando Planilha")
-        workbook_base.save(filepath + "\\Desktop\\" + "GerarVT\\Gerados\\Tabela Vale Transporte Professores" + "(" + str_current_datetime + ")" + ".xlsx")
+        workbook_base.save(os.path.join(__location__) + "\\Gerados\\Tabela Vale Transporte Professores" + "(" + str_current_datetime + ")" + ".xlsx")
         print("\nPlanilha de Professores Gerada com Sucesso\n")
         
 os.system('cls')
@@ -170,10 +175,12 @@ if metro_pass_quant_total + star_pass_quant_total + fenix_pass_quant != sum_quan
     print ("\nSomatório de Passes da Planilha:", sum_quant_pass_check)
     print ("\nSomatório de Passes Calculado:", metro_pass_quant_total + star_pass_quant_total + fenix_pass_quant)
 else:
-    print ("A Contabilização de passes está ok\nGerando arquivo de passes")    
-    with open (filepath + "\\Desktop\\" + "GerarVT\\Gerados\\Quantidade Passes.txt", "w") as file:
-        data = ["**Consôrcio Fenix**", "\nQuantidade Total de Passes:", str(fenix_pass_quant), "\nValor Total: R$ {:0.2f}\n".format(fenix_pass_value), "\n**Metropolitano (Biguaçu/Jotur)**", "\nQuantidade de Passes (5,55):", str(metro_pass_555_quant), "\nValor Total (5,55): R$ {:0.2f}\n".format(metro_pass_555_value), "\nQuantidade de Passes (7,70):", str(metro_pass_770_quant), "\nValor Total (7,70): R$ {:0.2f}\n".format(metro_pass_770_value), "\nQuantidade de Passes (9,80):", str(metro_pass_980_quant), "\nValor Total (9,80): R$ {:0.2f}\n".format(metro_pass_980_value), "\nSomatório dos Passes (Metropolitano):", str(metro_pass_quant_total) , "\nSomatório do Valor dos Passes(Metropolitano): R$ {:0.2f}\n".format(metro_pass_value_total) ,"\n**Estrela**", "\nQuantidade de Passes (5,10):", str(star_pass_510_quant), "\nValor Total (5,10): R$ {:0.2f}\n".format(star_pass_510_value), "\nQuantidade de Passes (5,55):", str(star_pass_555_quant), "\nValor Total (5,55): R$ {:0.2f}\n".format(star_pass_555_value), "\nQuantidade de Passes (7,70):", str(star_pass_770_quant), "\nValor Total (7,70): R$ {:0.2f}\n".format(star_pass_770_value), "\nSomatório dos Passes (Estrela):", str(star_pass_quant_total) , "\nSomatório do Valor dos Passes(Estrela): R$ {:0.2f}\n".format(star_pass_value_total)]
-        for line in data:
-            file.write(line)
+    print ("\nA Contabilização de passes está ok")    
 
-input("\nPressione qualquer tecla para terminar...")
+print("\nGerando arquivo de passes")
+with open (os.path.join(__location__) +  "\\Gerados\\Quantidade Passes.txt", "w") as file:
+    data = ["**Consôrcio Fenix**", "\nQuantidade Total de Passes:", str(fenix_pass_quant), "\nValor Total: R$ {:0.2f}\n".format(fenix_pass_value), "\n**Metropolitano (Biguaçu/Jotur)**", "\nQuantidade de Passes (5,55):", str(metro_pass_555_quant), "\nValor Total (5,55): R$ {:0.2f}\n".format(metro_pass_555_value), "\nQuantidade de Passes (7,70):", str(metro_pass_770_quant), "\nValor Total (7,70): R$ {:0.2f}\n".format(metro_pass_770_value), "\nQuantidade de Passes (9,80):", str(metro_pass_980_quant), "\nValor Total (9,80): R$ {:0.2f}\n".format(metro_pass_980_value), "\nSomatório dos Passes (Metropolitano):", str(metro_pass_quant_total) , "\nSomatório do Valor dos Passes(Metropolitano): R$ {:0.2f}\n".format(metro_pass_value_total) ,"\n**Estrela**", "\nQuantidade de Passes (5,10):", str(star_pass_510_quant), "\nValor Total (5,10): R$ {:0.2f}\n".format(star_pass_510_value), "\nQuantidade de Passes (5,55):", str(star_pass_555_quant), "\nValor Total (5,55): R$ {:0.2f}\n".format(star_pass_555_value), "\nQuantidade de Passes (7,70):", str(star_pass_770_quant), "\nValor Total (7,70): R$ {:0.2f}\n".format(star_pass_770_value), "\nSomatório dos Passes (Estrela):", str(star_pass_quant_total) , "\nSomatório do Valor dos Passes(Estrela): R$ {:0.2f}\n".format(star_pass_value_total)]
+    for line in data:
+        file.write(line)
+print("\nArquivo de passes gerado")
+input("\nPressione qualquer tecla para encerrar a aplicação...")
